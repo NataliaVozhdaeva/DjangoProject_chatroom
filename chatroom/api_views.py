@@ -1,6 +1,3 @@
-from django.shortcuts import render
-
-# Create your views here.
 from rest_framework import status, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -17,7 +14,7 @@ def register_user(request):
     Also creates a UserProfile with nickname (defaults to username if not provided).
     """
     serializer = UserRegistrationSerializer(data=request.data)
-
+    
     if serializer.is_valid():
         user = serializer.save()
         # Return user data without password
@@ -26,7 +23,7 @@ def register_user(request):
             'message': 'User registered successfully',
             'user': response_serializer.data
         }, status=status.HTTP_201_CREATED)
-
+    
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -48,33 +45,33 @@ def update_profile(request):
     """
     user = request.user
     profile = user.userprofile
-
+    
     # Update user fields
     if 'email' in request.data:
         if User.objects.filter(email=request.data['email']).exclude(id=user.id).exists():
             return Response(
-                {'email': 'A user with this email already exists.'},
+                {'email': 'A user with this email already exists.'}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
         user.email = request.data['email']
-
+    
     if 'first_name' in request.data:
         user.first_name = request.data['first_name']
     if 'last_name' in request.data:
         user.last_name = request.data['last_name']
-
+    
     # Update profile fields
     if 'nickname' in request.data:
         if UserProfile.objects.filter(nickname=request.data['nickname']).exclude(id=profile.id).exists():
             return Response(
-                {'nickname': 'A user with this nickname already exists.'},
+                {'nickname': 'A user with this nickname already exists.'}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
         profile.nickname = request.data['nickname']
-
+    
     user.save()
     profile.save()
-
+    
     serializer = UserSerializer(user)
     return Response({
         'message': 'Profile updated successfully',
