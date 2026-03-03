@@ -16,8 +16,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+from django.http import HttpResponse
+
+def login_html_view(request):
+    with open('login.html', 'r') as f:
+        return HttpResponse(f.read(), content_type='text/html')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/', include('chatroom.urls')),
-]
+    path('login/', login_html_view, name='login-html'),
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

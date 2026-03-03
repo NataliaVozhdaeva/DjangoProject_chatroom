@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chatroom API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        form { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        input { display: block; margin: 10px 0; padding: 8px; width: 300px; }
+        button { padding: 10px 20px; background: #007cba; color: white; border: none; cursor: pointer; }
+        .response { margin: 20px 0; padding: 15px; background: #f0f0f0; }
+    </style>
+</head>
+<body>
+    <h1>Chatroom API Test</h1>
+    
+    <h2>Register</h2>
+    <form action="http://localhost:8000/api/auth/register/" method="post">
+        <input type="text" name="username" placeholder="Username" required><br>
+        <input type="email" name="email" placeholder="Email" required><br>
+        <input type="password" name="password" placeholder="Password" required><br>
+        <input type="password" name="password_confirm" placeholder="Confirm Password" required><br>
+        <input type="text" name="nickname" placeholder="Nickname (optional)"><br>
+        <button type="submit">Register</button>
+    </form>
+    
+    <h2>Login</h2>
+    <form action="http://localhost:8000/api/auth/login/" method="post">
+        <input type="text" name="username" placeholder="Username" required><br>
+        <input type="password" name="password" placeholder="Password" required><br>
+        <button type="submit">Login</button>
+    </form>
+    
+    <h2>Test Profile (requires login)</h2>
+    <button onclick="testProfile()">Test Profile API</button>
+    <div id="profileResponse" class="response" style="display:none;"></div>
+    
+    <script>
+        async function testProfile() {
+            try {
+                const response = await fetch('http://localhost:8000/api/auth/profile/', {
+                    method: 'GET',
+                    credentials: 'include'  // Important for session cookies
+                });
+                const data = await response.json();
+                document.getElementById('profileResponse').style.display = 'block';
+                document.getElementById('profileResponse').innerHTML = 
+                    '<h3>Profile Response:</h3><pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('profileResponse').style.display = 'block';
+                document.getElementById('profileResponse').innerHTML = 
+                    '<h3>Error:</h3><pre>' + error.message + '</pre>';
+            }
+        }
+    </script>
+</body>
+</html>
