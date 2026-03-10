@@ -15,5 +15,6 @@ urlpatterns = [
     path('rooms/', views.list_rooms, name='list-rooms'),
     path('rooms/<int:room_id>/join/', views.join_room, name='join-room'),
     path('rooms/<int:room_id>/messages/', views.room_messages, name='room-messages'),
+    path('rooms/<int:room_id>/messages/<int:message_id>/', views.message_detail, name='message-detail'),
     path('rooms/<int:room_id>/participants/', views.room_participants, name='room-participants'),
 ]

@@ -233,6 +233,53 @@ def room_participants(request, room_id):
         }, status=status.HTTP_404_NOT_FOUND)
 
 
+@api_view(['PUT', 'DELETE'])
+@permission_classes([permissions.IsAuthenticated])
+def message_detail(request, room_id, message_id):
+    """
+    Edit (PUT) or Delete (DELETE) a user's own message
+    """
+    try:
+        room = Room.objects.get(id=room_id)
+        message = Message.objects.get(id=message_id, room=room)
+    except Room.DoesNotExist:
+        return Response({
+            'error': 'Room not found'
+        }, status=status.HTTP_404_NOT_FOUND)
+    except Message.DoesNotExist:
+        return Response({
+            'error': 'Message not found'
+        }, status=status.HTTP_404_NOT_FOUND)
+    
+    # Check if user is the owner of the message
+    if message.user != request.user:
+        return Response({
+            'error': 'You can only edit or delete your own messages'
+        }, status=status.HTTP_403_FORBIDDEN)
+    
+    if request.method == 'PUT':
+        content = request.data.get('content')
+        if not content:
+            return Response({
+                'error': 'Message content is required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        message.content = content
+        message.save()
+        
+        serializer = MessageSerializer(message)
+        return Response({
+            'message': 'Message updated successfully',
+            'data': serializer.data
+        }, status=status.HTTP_200_OK)
+    
+    elif request.method == 'DELETE':
+        message.delete()
+        return Response({
+            'message': 'Message deleted successfully'
+        }, status=status.HTTP_200_OK)
+
+
 @api_view(['PUT', 'PATCH'])
 @permission_classes([permissions.IsAuthenticated])
 def update_profile(request):
