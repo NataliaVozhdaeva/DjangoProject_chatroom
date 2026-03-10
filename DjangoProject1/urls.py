@@ -26,6 +26,6 @@ def login_html_view(request):
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/auth/', include('chatroom.urls')),
+    path('api/chat/', include('chatroom.urls')),
     path('login/', login_html_view, name='login-html'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
