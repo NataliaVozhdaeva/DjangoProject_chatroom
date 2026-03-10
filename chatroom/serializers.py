@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import UserProfile
+from .models import UserProfile, Room, Message, RoomParticipant
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -54,3 +54,36 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'email', 'first_name', 'last_name', 'profile']
         read_only_fields = ['id']
+
+
+class RoomSerializer(serializers.ModelSerializer):
+    created_by = UserSerializer(read_only=True)
+    participant_count = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Room
+        fields = ['id', 'name', 'description', 'is_private', 'created_by', 'created_at', 'participant_count']
+        read_only_fields = ['id', 'created_by', 'created_at']
+    
+    def get_participant_count(self, obj):
+        return obj.participants.count()
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    user_nickname = serializers.CharField(source='user.userprofile.nickname', read_only=True)
+    
+    class Meta:
+        model = Message
+        fields = ['id', 'content', 'user', 'user_nickname', 'room', 'timestamp']
+        read_only_fields = ['id', 'user', 'timestamp']
+
+
+class RoomParticipantSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    user_nickname = serializers.CharField(source='user.userprofile.nickname', read_only=True)
+    
+    class Meta:
+        model = RoomParticipant
+        fields = ['id', 'user', 'user_nickname', 'room', 'joined_at']
+        read_only_fields = ['id', 'joined_at']

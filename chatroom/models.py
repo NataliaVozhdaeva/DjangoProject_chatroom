@@ -14,6 +14,7 @@ class UserProfile(models.Model):
 class Room(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
+    is_private = models.BooleanField(default=False)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_rooms')
     created_at = models.DateTimeField(auto_now_add=True)
     
