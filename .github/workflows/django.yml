@@ -16,4 +16,4 @@ jobs:
 
       - name: Build Docker image
         run:
-          docker buid -t django app .
+          docker build -t django app .
